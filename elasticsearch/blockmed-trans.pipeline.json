@@ -1,0 +1,17 @@
+{
+  "description": "blockmed transaction pipeline",
+  "processors": [
+    {
+      "set": {
+        "field": "_id",
+        "value": "{{uid}}"
+      }
+    },
+    {
+      "set": {
+        "field": "ingestReceivedTime",
+        "value": "{{_ingest.timestamp}}"
+      }
+    }
+  ]
+}
