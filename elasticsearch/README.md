@@ -38,6 +38,8 @@ TBD
 
 Setup search template
 
+### for specific query string search
+
 ```
 POST _scripts/blockmed-trans-aggs
 {
@@ -127,6 +129,86 @@ GET blockmed-trans-*/_search/template
     "params": {
         "query_string": "shrimp"
     }
+}
+```
+
+### for search all data
+
+```
+POST _scripts/blockmed-trans-aggs-all
+{
+  "script": {
+    "lang": "mustache",
+    "source": {
+      "size": 0,
+      "aggs": {
+        "ipfsMetadataHash": {
+          "terms": {
+            "field": "returnValues.ipfsMetadataHash.keyword",
+            "size": 10
+          },
+          "aggs": {
+            "PurchaseTxRecordCount": {
+              "filter": {
+                "term": {
+                  "event.keyword": "PurchaseTxRecord"
+                }
+              }
+            },
+            "top_hits": {
+              "top_hits": {
+                "sort": [
+                  {
+                    "blockNumber": {
+                      "order": "desc"
+                    }
+                  }
+                ],
+                "_source": {
+                  "includes": [
+                    "event",
+                    "metadata",
+                    "returnValues"
+                  ]
+                },
+                "size": 1
+              }
+            },
+            "filesize": {
+              "max": {
+                "field": "metadata.filesize"
+              }
+            },
+            "bucket_sort": {
+              "bucket_sort": {
+                "sort": [
+                  {
+                    "PurchaseTxRecordCount._count": {
+                      "order": "desc"
+                    }
+                  },
+                  {
+                    "filesize": {
+                      "order": "desc"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Invoke search template
+
+```
+GET blockmed-trans-*/_search/template
+{
+    "id": "blockmed-trans-aggs-all"
 }
 ```
 
