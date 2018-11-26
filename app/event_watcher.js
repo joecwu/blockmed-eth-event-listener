@@ -598,10 +598,7 @@ const contract_abi = [
 
 function captureMetaInfo(result) {
   var ipfsMetadataHash = result.returnValues.ipfsMetadataHash
-  var accesser = result.returnValues.accesser
-  var tokenCost = result.returnValues.tokenCost
-  var dataowner = result.returnValues.dataowner
-
+  
   var Request = require("request");
 
   Request.get(endpoint_IPFS + ipfsMetadataHash, (error, response, body) => {
@@ -629,13 +626,20 @@ contract_instance.events.allEvents((err, result) => {
     result.uid = uuidv1();
     result.metadataCaptureTime = date.toISOString();
 
-    var event = result.event
-    switch (event) {
-      case "PurchaseTxRecord":
-        captureMetaInfo(result);
-        break;
-      default:
-        console.log(JSON.stringify(result));
+    // var event = result.event
+    // switch (event) {
+    //   case "PurchaseTxRecord":
+    //     captureMetaInfo(result);
+    //     break;
+    //   default:
+    //     console.log(JSON.stringify(result));
+    // }
+    
+    // retrieve metadata for all events which has ipfsMetadataHash
+    if(result.returnValues.ipfsMetadataHash){
+      captureMetaInfo(result);
+    } else {
+      console.log(JSON.stringify(result));
     }
   }else{
     console.error(err, result)
