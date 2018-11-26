@@ -31,3 +31,181 @@ PUT _ingest/pipeline/blockmed-trans
 ## Setup Index Template
 
 TBD
+
+
+
+## Search Template
+
+Setup search template
+
+```
+POST _scripts/blockmed-trans-aggs
+{
+  "script": {
+    "lang": "mustache",
+    "source": {
+      "size": 0,
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "match": {
+                "metadata.description": "{{query_string}}"
+              }
+            }
+          ]
+        }
+      },
+      "aggs": {
+        "ipfsMetadataHash": {
+          "terms": {
+            "field": "returnValues.ipfsMetadataHash.keyword",
+            "size": 10
+          },
+          "aggs": {
+            "PurchaseTxRecordCount": {
+              "filter": {
+                "term": {
+                  "event.keyword": "PurchaseTxRecord"
+                }
+              }
+            },
+            "top_hits": {
+              "top_hits": {
+                "sort": [
+                  {
+                    "blockNumber": {
+                      "order": "desc"
+                    }
+                  }
+                ],
+                "_source": {
+                  "includes": [
+                    "event",
+                    "metadata",
+                    "returnValues"
+                  ]
+                },
+                "size": 1
+              }
+            },
+            "filesize": {
+              "max": {
+                "field": "metadata.filesize"
+              }
+            },
+            "bucket_sort": {
+              "bucket_sort": {
+                "sort": [
+                  {
+                    "PurchaseTxRecordCount._count": {
+                      "order": "desc"
+                    }
+                  },
+                  {
+                    "filesize": {
+                      "order": "desc"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Invoke search template
+
+```
+GET blockmed-trans-*/_search/template
+{
+    "id": "blockmed-trans-aggs", 
+    "params": {
+        "query_string": "shrimp"
+    }
+}
+```
+
+
+## Example
+
+Search & Aggregate data
+
+```
+GET blockmed-trans-*/_search
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "metadata.description": "shrimp3"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "ipfsMetadataHash": {
+      "terms": {
+        "field": "returnValues.ipfsMetadataHash.keyword",
+        "size": 10
+      },
+      "aggs": {
+        "PurchaseTxRecordCount": {
+          "filter": {
+            "term": {
+              "event.keyword": "PurchaseTxRecord"
+            }
+          }
+        },
+        "top_hits": {
+          "top_hits": {
+            "sort": [
+              {
+                "blockNumber": {
+                  "order": "desc"
+                }
+              }
+            ],
+            "_source": {
+              "includes": [
+                "event",
+                "metadata",
+                "returnValues"
+              ]
+            },
+            "size": 1
+          }
+        },
+        "filesize": {
+          "max": {
+            "field": "metadata.filesize"
+          }
+        },
+        "bucket_sort": {
+          "bucket_sort": {
+            "sort": [
+              {
+                "PurchaseTxRecordCount._count": {
+                  "order": "desc"
+                }
+              },
+              {
+                "filesize": {
+                  "order": "desc"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+```
