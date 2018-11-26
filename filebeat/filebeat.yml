@@ -25,7 +25,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /mnt/ddsongyy/event_watcher/event_watcher.log
+    - /var/log/blockmed-eth-event-listener/event.log
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key: log
