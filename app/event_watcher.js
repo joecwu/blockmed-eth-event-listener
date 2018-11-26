@@ -598,17 +598,22 @@ const contract_abi = [
 
 function captureMetaInfo(result) {
   var ipfsMetadataHash = result.returnValues.ipfsMetadataHash
-  
+
   var Request = require("request");
 
   Request.get(endpoint_IPFS + ipfsMetadataHash, (error, response, body) => {
     if(error) {
         return console.error("error", error);
-    }
-    var resp = JSON.parse(body);
-    result.metadata = resp;
-    delete result.metadata.encrypted;
-    console.log(JSON.stringify(result));
+	}
+	try{
+		var resp = JSON.parse(body);
+		result.metadata = resp;
+		delete result.metadata.encrypted;
+		console.log(JSON.stringify(result));
+	} catch(e) {
+		console.error(e, result);
+		console.log(JSON.stringify(result))
+	}
 });
 }
 
