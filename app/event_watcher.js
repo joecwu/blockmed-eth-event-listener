@@ -3,7 +3,7 @@
 // run with local Provider
 const Web3 = require('web3');
 // enpoint_IPFS must end with `/`
-const endpoint_IPFS = "http://ipfs.blcksync.info:8888/ipfs/";
+const baseUrl_IPFS = "http://ipfs.blcksync.info:8888/ipfs/";
 const uuidv1 = require('uuid/v1');
 
 // contract address 0x5FF8045796F97B90e2f9075Bde97fF62350294C3 ABI on Rinkeby
@@ -596,23 +596,66 @@ const contract_abi = [
 	}
 ];
 
-function captureMetaInfo(result) {
-  var ipfsMetadataHash = result.returnValues.ipfsMetadataHash
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, printf } = format;
+const DailyRotateFile = require('winston-daily-rotate-file');
+var eventTransport = new (transports.DailyRotateFile)({
+    filename: 'logs/event-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: false,
+    maxSize: '20m',
+    maxFiles: '90d'
+  });
+var appTransport = new (transports.DailyRotateFile)({
+	filename: 'logs/app-%DATE%.log',
+	datePattern: 'YYYY-MM-DD',
+	zippedArchive: false,
+	maxSize: '20m',
+	maxFiles: '90d'
+});
+const eventLogger = createLogger({
+  level: 'info',
+  format: printf(info => info.message),
+  transports: [
+	new transports.Console(),
+	eventTransport
+  ]
+});
+const logger = createLogger({
+  level: 'debug',
+  format: combine(
+	timestamp(),
+	format.json()
+  ),
+  transports: [
+	new transports.Console(),
+	appTransport
+  ]
+});
 
+function captureMetaInfo(result) {
+  var ipfsMetadataHash = result.returnValues.ipfsMetadataHash;
+  logger.debug("capturing metadata from ipfs", {"ipfsHash": ipfsMetadataHash, "baseUrl": baseUrl_IPFS});
   var Request = require("request");
 
-  Request.get(endpoint_IPFS + ipfsMetadataHash, (error, response, body) => {
+  Request.get({ 
+		baseUrl: baseUrl_IPFS, 
+		uri: ipfsMetadataHash, 
+		time: true, 
+		timeout: 120*1000
+	}, (error, response, body) => {
     if(error) {
-        return console.error("error", error);
+        return logger.error("capture meta error", {"ipfsHash": ipfsMetadataHash, "errObj": error});
 	}
 	try{
+		logger.debug("captured metadata from ipfs", {"ipfsHash": ipfsMetadataHash, "elapsedTime": response.elapsedTime });
 		var resp = JSON.parse(body);
 		result.metadata = resp;
 		delete result.metadata.encrypted;
-		console.log(JSON.stringify(result));
+		eventLogger.info(JSON.stringify(result));
 	} catch(e) {
-		console.error(e, result);
-		console.log(JSON.stringify(result))
+		logger.error("error when parse metaInfo response.", { "errObj": e, "result": result });
+		eventLogger.info(JSON.stringify(result))
 	}
 });
 }
@@ -624,8 +667,10 @@ function captureMetaInfo(result) {
 const web3 = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
 let contract_instance = new web3.eth.Contract(contract_abi, contract_addr);
 
+logger.info("BlockMed eth event listener started.");
 contract_instance.events.allEvents((err, result) => {
   if(result){
+	logger.info("got event", result);
     // add general data into result obj
     var date = new Date();
     result.uid = uuidv1();
@@ -637,16 +682,16 @@ contract_instance.events.allEvents((err, result) => {
     //     captureMetaInfo(result);
     //     break;
     //   default:
-    //     console.log(JSON.stringify(result));
+    //     eventLogger.info(JSON.stringify(result));
     // }
     
     // retrieve metadata for all events which has ipfsMetadataHash
     if(result.returnValues.ipfsMetadataHash){
       captureMetaInfo(result);
     } else {
-      console.log(JSON.stringify(result));
+		eventLogger.info(JSON.stringify(result));
     }
   }else{
-    console.error(err, result)
+    logger.error("got error event", err, result);
   }
 });
