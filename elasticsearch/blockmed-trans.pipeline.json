@@ -8,9 +8,8 @@
       }
     },
     {
-      "set": {
-        "field": "ingestReceivedTime",
-        "value": "{{_ingest.timestamp}}"
+      "script": {
+        "source": " ctx._index = 'blockmed-trans-' + (ctx.blockNumber/100000)"
       }
     }
   ]
