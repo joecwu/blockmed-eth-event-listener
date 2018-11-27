@@ -28,7 +28,7 @@ filebeat.inputs:
     - /var/log/blockmed-eth-event-listener/logs/event-*.log
   json.keys_under_root: true
   json.add_error_key: true
-  json.message_key: log
+  json.message_key:
   json.overwrite_keys: true
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
@@ -75,7 +75,7 @@ filebeat.inputs:
     - /var/log/blockmed-eth-event-listener/logs/app-*.log
   json.keys_under_root: true
   json.add_error_key: true
-  json.message_key: log
+  json.message_key: 
   json.overwrite_keys: true
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
@@ -198,22 +198,22 @@ setup.kibana:
 # Configure what output to use when sending the data collected by the beat.
 
 #-------------------------- Elasticsearch output ------------------------------
-output.elasticsearch:
+#output.elasticsearch:
   # Array of hosts to connect to.
-  hosts: ["192.168.1.62:9200"]
-  index: "blockmed-trans-%{+yyyy.MM.dd}"
+  #hosts: ["192.168.1.62:9200"]
+  #index: "blockmed-trans-%{+yyyy.MM.dd}"
 
   # Optional protocol and basic auth credentials.
   #protocol: "https"
-  username: "admin"
-  password: "admin"
+  #username: "admin"
+  #password: "admin"
 
-  pipeline: blockmed-trans
+  #pipeline: blockmed-trans
 
 #----------------------------- Logstash output --------------------------------
-#output.logstash:
+output.logstash:
   # The Logstash hosts
-  #hosts: ["localhost:5044"]
+  hosts: ["192.168.1.63:5044"]
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
