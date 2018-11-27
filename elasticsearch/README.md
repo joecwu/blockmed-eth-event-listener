@@ -14,13 +14,12 @@ PUT _ingest/pipeline/blockmed-trans
     {
       "set": {
         "field": "_id",
-        "value": "{{uid}}"
+        "value": "{{transactionHash}}|{{logIndex}}"
       }
     },
     {
-      "set": {
-        "field": "ingestReceivedTime",
-        "value": "{{_ingest.timestamp}}"
+      "script": {
+        "source": " ctx._index = 'blockmed-trans-' + (ctx.blockNumber/100000)"
       }
     }
   ]
