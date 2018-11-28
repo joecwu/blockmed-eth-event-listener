@@ -1,0 +1,17 @@
+[Unit]
+Description=BlockMed Ethereum Event Listener
+After=network.target
+
+[Service]
+ExecStart=/mnt/blockmed-eth-event-listener/app/event_watcher.js
+Restart=always
+# User=nobody
+# Use 'nogroup' group for Ubuntu/Debian
+# use 'nobody' group for Fedora
+# Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/mnt/blockmed-eth-event-listener/app
+
+[Install]
+WantedBy=multi-user.target
