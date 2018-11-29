@@ -34,7 +34,7 @@ POST _scripts/blockmed-trans-aggs
         "ipfsMetadataHash": {
           "terms": {
             "field": "returnValues.ipfsMetadataHash.keyword",
-            "size": 10
+            "size": "{{size}}"
           },
           "aggs": {
             "PurchaseTxRecordCount": {
@@ -99,7 +99,8 @@ GET blockmed-trans-*/_search/template
 {
     "id": "blockmed-trans-aggs", 
     "params": {
-        "query_string": "shrimp"
+        "query_string": "shrimp",
+        "size": 10
     }
 }
 ```
@@ -117,7 +118,7 @@ POST _scripts/blockmed-trans-aggs-all
         "ipfsMetadataHash": {
           "terms": {
             "field": "returnValues.ipfsMetadataHash.keyword",
-            "size": 10
+            "size": "{{size}}"
           },
           "aggs": {
             "PurchaseTxRecordCount": {
@@ -180,7 +181,10 @@ Invoke search template
 ```
 GET blockmed-trans-*/_search/template
 {
-    "id": "blockmed-trans-aggs-all"
+    "id": "blockmed-trans-aggs-all", 
+    "params": {
+        "size": 10
+    }
 }
 ```
 
