@@ -2,7 +2,304 @@
 
 ## Setup Index Template
 
-TBD
+```
+POST _template/blockmed-trans
+{
+  "index_patterns": ["blockmed-trans-*"],
+  "settings": {
+    "number_of_shards": 5,
+    "number_of_replicas": 2
+  },
+  "mappings": {
+    "doc": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "@version": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "address": {
+          "type": "keyword"
+        },
+        "beat": {
+          "properties": {
+            "hostname": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "version": {
+              "type": "keyword"
+            }
+          }
+        },
+        "blockHash": {
+          "type": "keyword"
+        },
+        "blockNumber": {
+          "type": "long"
+        },
+        "event": {
+          "type": "keyword"
+        },
+        "fields": {
+          "properties": {
+            "appName": {
+              "type": "keyword"
+            },
+            "appType": {
+              "type": "keyword"
+            }
+          }
+        },
+        "host": {
+          "properties": {
+            "architecture": {
+              "type": "keyword"
+            },
+            "containerized": {
+              "type": "boolean"
+            },
+            "id": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "os": {
+              "properties": {
+                "codename": {
+                  "type": "keyword"
+                },
+                "family": {
+                  "type": "keyword"
+                },
+                "platform": {
+                  "type": "keyword"
+                },
+                "version": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "keyword"
+        },
+        "indexBlockNumber": {
+          "type": "long"
+        },
+        "input": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "logIndex": {
+          "type": "long"
+        },
+        "metadata": {
+          "properties": {
+            "category": {
+              "type": "keyword"
+            },
+            "description": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "filesize": {
+              "type": "long"
+            }
+          }
+        },
+        "metadataCaptureTime": {
+          "type": "date"
+        },
+        "offset": {
+          "type": "long"
+        },
+        "prospector": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "raw": {
+          "properties": {
+            "data": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "topics": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "removed": {
+          "type": "boolean"
+        },
+        "returnValues": {
+          "properties": {
+            "0": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "1": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "2": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "3": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "accesser": {
+              "type": "keyword"
+            },
+            "dataowner": {
+              "type": "keyword"
+            },
+            "ethersSent": {
+              "type": "long",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "ipfsMetadataHash": {
+              "type": "keyword"
+            },
+            "registor": {
+              "type": "keyword"
+            },
+            "tokenCost": {
+              "type": "long",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "tokensGranted": {
+              "type": "long",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "underlyingFileSize": {
+              "type": "long",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "signature": {
+          "type": "keyword"
+        },
+        "source": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "tags": {
+          "type": "keyword"
+        },
+        "transactionHash": {
+          "type": "keyword"
+        },
+        "transactionIndex": {
+          "type": "long"
+        },
+        "uid": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+```
 
 
 
@@ -20,7 +317,7 @@ POST _scripts/blockmed-trans-aggs
 {
   "script": {
     "lang": "mustache",
-    "source": """{"size":0,"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category.keyword":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash.keyword","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event.keyword":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
+    "source": """{"size":0,"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
   }
 }
 ```
@@ -51,7 +348,7 @@ Original `source` json object:
           "should": [
             {
               "term": {
-                "metadata.category.keyword": "{{category}}"
+                "metadata.category": "{{category}}"
               }
             }{{^category}},{"match_all":{}}{{/category}}
           ]
@@ -62,14 +359,14 @@ Original `source` json object:
   "aggs": {
     "ipfsMetadataHash": {
       "terms": {
-        "field": "returnValues.ipfsMetadataHash.keyword",
+        "field": "returnValues.ipfsMetadataHash",
         "size": "{{size}}"
       },
       "aggs": {
         "PurchaseTxRecordCount": {
           "filter": {
             "term": {
-              "event.keyword": "PurchaseTxRecord"
+              "event": "PurchaseTxRecord"
             }
           }
         },
@@ -140,7 +437,7 @@ POST _scripts/blockmed-trans-aggs-all
 {
   "script": {
     "lang": "mustache",
-    "source": """{"size":0,"query":{"bool":{"filter":{"bool":{"should":[{"term":{"metadata.category.keyword":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash.keyword","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event.keyword":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
+    "source": """{"size":0,"query":{"bool":{"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
   }
 }
 
@@ -161,7 +458,7 @@ Original `source` json object
               "should": [
                 {
                   "term": {
-                    "metadata.category.keyword": "{{category}}"
+                    "metadata.category": "{{category}}"
                   }
                 }{{^category}},{"match_all":{}}{{/category}}
               ]
@@ -172,14 +469,14 @@ Original `source` json object
       "aggs": {
         "ipfsMetadataHash": {
           "terms": {
-            "field": "returnValues.ipfsMetadataHash.keyword",
+            "field": "returnValues.ipfsMetadataHash",
             "size": "{{size}}"
           },
           "aggs": {
             "PurchaseTxRecordCount": {
               "filter": {
                 "term": {
-                  "event.keyword": "PurchaseTxRecord"
+                  "event": "PurchaseTxRecord"
                 }
               }
             },
@@ -267,14 +564,14 @@ GET blockmed-trans-*/_search
   "aggs": {
     "ipfsMetadataHash": {
       "terms": {
-        "field": "returnValues.ipfsMetadataHash.keyword",
+        "field": "returnValues.ipfsMetadataHash",
         "size": 10
       },
       "aggs": {
         "PurchaseTxRecordCount": {
           "filter": {
             "term": {
-              "event.keyword": "PurchaseTxRecord"
+              "event": "PurchaseTxRecord"
             }
           }
         },
