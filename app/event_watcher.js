@@ -358,7 +358,7 @@ function captureMetaInfo(result) {
 // new web3 versions 1.0.x
 // web3.eth.Contract(contractAbi, contractAddress);
 const web3 = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
-let contract_instance = new web3.eth.Contract(contract_abi, contract_addr);
+let contract_instance = new web3.eth.Contract(contract_abi, address);
 
 logger.info("BlockMed eth event listener started.");
 contract_instance.events.allEvents((err, result) => {
