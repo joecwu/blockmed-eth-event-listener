@@ -5,7 +5,7 @@
 ```
 POST _template/blockmed-trans
 {
-  "index_patterns": ["blockmed-trans-*"],
+  "index_patterns": ["blockmed-trans-*","backup-blockmed-trans-*"],
   "settings": {
     "number_of_shards": 5,
     "number_of_replicas": 2
