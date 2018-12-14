@@ -358,9 +358,12 @@ function writeLogWithMetaInfo(result) {
         });
         var resp = JSON.parse(body);
         result.metadata = resp;
+        // wirte log for blockmed-trans-
+        delete result.metadata.encrypted;
 
+        logger.debug("process ipfsData log.");
         // write additional log for blockmed-ipfs- data
-        switch (event) {
+        switch (result.event) {
           case "RegisteredEncryptedRecord":
             var ipfsDataObj = {
               uid: ipfsMetadataHash,
@@ -390,7 +393,7 @@ function writeLogWithMetaInfo(result) {
               //returnValues
               accesser: result.returnValues.accesser,
               dataowner: result.returnValues.dataowner,
-              purchaseTime: result.metadataCaptureTime,
+              purchaseTime: result.metadataCaptureTime
             };
             ipfsLogger.info(JSON.stringify(ipfsDataPurchasedObj));
             break;
@@ -398,8 +401,6 @@ function writeLogWithMetaInfo(result) {
           //Do Nothing
         }
 
-        // wirte log for blockmed-trans-
-        delete result.metadata.encrypted;
         eventLogger.info(JSON.stringify(result));
       } catch (e) {
         logger.error("error when parse metaInfo response.", {
