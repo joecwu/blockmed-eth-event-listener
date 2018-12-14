@@ -602,7 +602,7 @@ Original `source` json object:
     {{#sort_by_time}}{
       "_script": {
         "script": {
-          "source": """doc["metadataCaptureTime"].date.getMillisOfSecond()""",
+          "source": """doc["metadataCaptureTime"].date.getMillis()""",
           "lang": "painless"
         },
         "type": "number",
