@@ -120,7 +120,7 @@ filebeat.inputs:
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
     - /mnt/blockmed-eth-event-listener/app/logs/app-*.log
-  json.keys_under_root: true
+  json.keys_under_root: false
   json.add_error_key: true
   json.message_key: 
   json.overwrite_keys: true
