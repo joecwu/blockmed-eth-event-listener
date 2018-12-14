@@ -25,7 +25,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/blockmed-eth-event-listener/logs/event-*.log
+    - /mnt/blockmed-eth-event-listener/app/logs/event-*.log
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key:
@@ -72,7 +72,54 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/blockmed-eth-event-listener/logs/app-*.log
+    - /mnt/blockmed-eth-event-listener/app/logs/ipfs-*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.message_key:
+  json.overwrite_keys: true
+
+  # Exclude lines. A list of regular expressions to match. It drops the lines that are
+  # matching any regular expression from the list.
+  #exclude_lines: ['^DBG']
+
+  # Include lines. A list of regular expressions to match. It exports the lines that are
+  # matching any regular expression from the list.
+  #include_lines: ['^ERR', '^WARN']
+
+  # Exclude files. A list of regular expressions to match. Filebeat drops the files that
+  # are matching any regular expression from the list. By default, no files are dropped.
+  #exclude_files: ['.gz$']
+
+  # Optional additional fields. These fields can be freely picked
+  # to add additional information to the crawled log files for filtering
+  fields:
+   appType: ipfs
+   appName: blockmed-eth-event-listener
+
+  ### Multiline options
+
+  # Multiline can be used for log messages spanning multiple lines. This is common
+  # for Java Stack Traces or C-Line Continuation
+
+  # The regexp Pattern that has to be matched. The example pattern matches all lines starting with [
+  #multiline.pattern: ^\[
+
+  # Defines if the pattern set under pattern should be negated or not. Default is false.
+  #multiline.negate: false
+
+  # Match can be set to "after" or "before". It is used to define if lines should be append to a pattern
+  # that was (not) matched before or after or as long as a pattern is not matched based on negate.
+  # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
+  #multiline.match: after
+
+- type: log
+
+  # Change to true to enable this input configuration.
+  enabled: true
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /mnt/blockmed-eth-event-listener/app/logs/app-*.log
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key: 
@@ -213,7 +260,7 @@ setup.kibana:
 #----------------------------- Logstash output --------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["192.168.1.63:5044"]
+  hosts: ["192.168.1.61:5044"]
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
