@@ -558,7 +558,7 @@ POST _scripts/blockmed-ipfs
 {
   "script": {
     "lang": "mustache",
-    "source": """{"size":20,"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillisOfSecond()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"desc"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
+    "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillisOfSecond()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"desc"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
   }
 }
 ```
@@ -568,7 +568,8 @@ Original `source` json object:
 
 ```
 {
-  "size": 20,
+  "size": {{size}},
+  "from": {{from}},
   "query": {
     "bool": {
       "must": [
