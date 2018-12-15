@@ -1,0 +1,11 @@
+{
+  "ipfs": {
+    "gateway_url": "http://ipfs.blcksync.info:8888/ipfs/"
+  },
+  "ethereum": {
+    "contract": {
+      "address": "0x648279922dd55b22665D7A22685B660626c9FbBF"
+    },
+    "websocket_provider": "wss://mainnet.infura.io/ws"
+  }
+}
