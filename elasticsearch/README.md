@@ -558,7 +558,7 @@ POST _scripts/blockmed-ipfs
 {
   "script": {
     "lang": "mustache",
-    "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillisOfSecond()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"desc"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
+    "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillis()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"desc"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
   }
 }
 ```
@@ -647,6 +647,7 @@ GET blockmed-ipfs/_search/template
     "params": {
         "query_string": "desc",
         "category": "data",
+        "from": 0,
         "size": 10,
         "sort_by_time": true,
         "sort_by_filesize": true,
