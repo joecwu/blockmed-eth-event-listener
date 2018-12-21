@@ -4,14 +4,14 @@
 // run with local Provider
 const Web3 = require("web3");
 const uuidv1 = require("uuid/v1");
-const config = require('config');
+const config = require("config");
 // enpoint_IPFS must end with `/`
-const baseUrl_IPFS = config.get('ipfs.gateway_url');
+const baseUrl_IPFS = config.get("ipfs.gateway_url");
 
 // contract address 0x2098f0E37E74377380aAbD0B46b1Be7693B847D3 ABI on Rinkeby
 // contract address 0x4C97efc3604FCaEE022E1Ef8FD567531F364E1aa ABI on Ropstan Testnet
-const address = config.get('ethereum.contract.address');
-const websocket_provider = config.get('ethereum.websocket_provider');
+const address = config.get("ethereum.contract.address");
+const websocket_provider = config.get("ethereum.websocket_provider");
 const contract_abi = [
   {
     constant: false,
@@ -327,7 +327,11 @@ const ipfsLogger = createLogger({
 });
 const logger = createLogger({
   level: "debug",
-  format: combine(timestamp(), format.json()),
+  format: combine(
+    format.label({ uid: uuidv1() }),
+    timestamp(), 
+    format.json()
+    ),
   transports: [new transports.Console(), appTransport]
 });
 
@@ -407,7 +411,8 @@ function writeLogWithMetaInfo(result) {
       } catch (e) {
         logger.error("error when parse metaInfo response.", {
           errObj: e,
-          result: result
+          result: result,
+          metadata_body: body
         });
         eventLogger.info(JSON.stringify(result));
       }
@@ -419,12 +424,14 @@ function writeLogWithMetaInfo(result) {
 // web3.eth.contract(contractAbi).at(contractAddress);
 // new web3 versions 1.0.x
 // web3.eth.Contract(contractAbi, contractAddress);
-const web3 = new Web3(
-  new Web3.providers.WebsocketProvider(websocket_provider)
-);
+const web3 = new Web3(new Web3.providers.WebsocketProvider(websocket_provider));
 let contract_instance = new web3.eth.Contract(contract_abi, address);
 
-logger.info(`BlockMed eth event listener started on [${process.env.NODE_ENV}] environment. ws provider:[${websocket_provider}] contract address:[${address}]`);
+logger.info(
+  `BlockMed eth event listener started on [${
+    process.env.NODE_ENV
+  }] environment. ws provider:[${websocket_provider}] contract address:[${address}]`
+);
 contract_instance.events.allEvents((err, result) => {
   if (result) {
     logger.info("got event", result);
