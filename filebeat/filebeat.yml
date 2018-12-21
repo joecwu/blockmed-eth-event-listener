@@ -25,7 +25,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /mnt/blockmed-eth-event-listener/app/logs/event-*.log
+    - /mnt/blockmed-eth-event-listener/logs/event-*.log
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key:
@@ -72,7 +72,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /mnt/blockmed-eth-event-listener/app/logs/ipfs-*.log
+    - /mnt/blockmed-eth-event-listener/logs/ipfs-*.log
   json.keys_under_root: true
   json.add_error_key: true
   json.message_key:
@@ -119,10 +119,9 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /mnt/blockmed-eth-event-listener/app/logs/app-*.log
+    - /mnt/blockmed-eth-event-listener/logs/app-*.log
   json.keys_under_root: false
   json.add_error_key: true
-  json.message_key: 
   json.overwrite_keys: true
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
