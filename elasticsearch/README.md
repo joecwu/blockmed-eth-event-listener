@@ -143,7 +143,7 @@ POST _template/blockmed-trans
             "filesize": {
               "type": "long"
             },
-            "encryption_version": {
+            "encryptionVersion": {
               "type": "keyword"
             }
           }
