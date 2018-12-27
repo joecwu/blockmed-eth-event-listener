@@ -142,6 +142,9 @@ POST _template/blockmed-trans
             },
             "filesize": {
               "type": "long"
+            },
+            "encryption_version": {
+              "type": "keyword"
             }
           }
         },
@@ -530,12 +533,6 @@ POST _template/blockmed-ipfs
         },
         "uid": {
           "type": "keyword"
-        },
-        "latestPurchaseTime": {
-          "type": "date"
-        },
-        "purchaseTxRecords": {
-          "type": "keyword"
         }
       }
     }
@@ -551,113 +548,7 @@ Setup search template
 We use [pre-registered-template](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html#pre-registered-templates) because we want to make `query_string` and `category` as optional params.
 If there is no value or empty string, we will apply `{"match_all":{}}` query.
 
-### ipfs query string search
-
-```
-POST _scripts/blockmed-ipfs
-{
-  "script": {
-    "lang": "mustache",
-    "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillis()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"desc"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"desc"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
-  }
-}
-```
-
-
-Original `source` json object:
-
-```
-{
-  "size": {{size}},
-  "from": {{from}},
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "bool": {
-            "should": [
-              {
-                "match": {
-                  "metadata.description": "{{query_string}}"
-                }
-              }{{^query_string}},{"match_all":{}}{{/query_string}}
-            ]
-          }
-        }
-      ],
-      "filter": {
-        "bool": {
-          "should": [
-            {
-              "term": {
-                "metadata.category": "{{category}}"
-              }
-            }{{^category}},{"match_all":{}}{{/category}}
-          ]
-        }
-      }
-    }
-  },
-  "sort": [
-    {{#sort_by_time}}{
-      "_script": {
-        "script": {
-          "source": """doc["metadataCaptureTime"].date.getMillis()""",
-          "lang": "painless"
-        },
-        "type": "number",
-        "order": "desc"
-      }
-    },{{/sort_by_time}}
-    {{#sort_by_filesize}}{
-      "metadata.filesize": {
-        "order": "desc"
-      }
-    },{{/sort_by_filesize}}
-    {{#sort_by_accessed}}{
-      "_script": {
-        "script": {
-          "source": """doc["purchaseTxRecords"].values.size()""",
-          "lang": "painless"
-        },
-        "type": "number",
-        "order": "desc"
-      }
-    },{{/sort_by_accessed}}
-    {
-      "_score": {
-        "order": "desc"
-      }
-    }
-  ],
-  "highlight": {
-    "fields": {
-      "metadata.description": {}
-    }
-  }
-}
-```
-
-Invoke search template
-
-```
-GET blockmed-ipfs/_search/template
-{
-    "id": "blockmed-ipfs", 
-    "params": {
-        "query_string": "desc",
-        "category": "data",
-        "from": 0,
-        "size": 10,
-        "sort_by_time": true,
-        "sort_by_filesize": true,
-        "sort_by_accessed": true
-    }
-}
-
-```
-
-### for specific query string search (deprecated)
+### for specific query string search
 
 ```
 POST _scripts/blockmed-trans-aggs
@@ -777,7 +668,7 @@ GET blockmed-trans-*/_search/template
 }
 ```
 
-### for search all data (deprecated)
+### for search all data
 
 ```
 POST _scripts/blockmed-trans-aggs-all
