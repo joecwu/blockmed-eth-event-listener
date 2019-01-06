@@ -327,11 +327,7 @@ const ipfsLogger = createLogger({
 });
 const logger = createLogger({
   level: "debug",
-  format: combine(
-    format.label({ uid: uuidv1() }),
-    timestamp(), 
-    format.json()
-    ),
+  format: combine(format.label({ uid: uuidv1() }), timestamp(), format.json()),
   transports: [new transports.Console(), appTransport]
 });
 
@@ -433,20 +429,24 @@ logger.info(
   }] environment. ws provider:[${websocket_provider}] contract address:[${address}]`
 );
 contract_instance.events.allEvents((err, result) => {
-  if (result) {
-    logger.info("got event", result);
-    // add general data into result obj
-    var date = new Date();
-    result.uid = uuidv1();
-    result.metadataCaptureTime = date.toISOString();
+  try {
+    if (result) {
+      logger.info("got event", result);
+      // add general data into result obj
+      var date = new Date();
+      result.uid = uuidv1();
+      result.metadataCaptureTime = date.toISOString();
 
-    // retrieve metadata for all events which has ipfsMetadataHash
-    if (result.returnValues.ipfsMetadataHash) {
-      writeLogWithMetaInfo(result);
+      // retrieve metadata for all events which has ipfsMetadataHash
+      if (result.returnValues.ipfsMetadataHash) {
+        writeLogWithMetaInfo(result);
+      } else {
+        eventLogger.info(JSON.stringify(result));
+      }
     } else {
-      eventLogger.info(JSON.stringify(result));
+      logger.error("got error event.", { error: err, result: result });
     }
-  } else {
-    logger.error("got error event", err, result);
+  } catch (error) {
+    logger.error("failed to process event.", { error: error, result: result });
   }
 });
