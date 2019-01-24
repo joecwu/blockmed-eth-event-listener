@@ -4,7 +4,7 @@
   },
   "ethereum": {
     "contract": {
-      "address": "0x648279922dd55b22665D7A22685B660626c9FbBF"
+      "address": "0x6c842498aa6Fc02Fa88bA74013da6E0235Ea76Ab"
     },
     "websocket_provider": "wss://mainnet.infura.io/ws"
   }
