@@ -551,105 +551,11 @@ If there is no value or empty string, we will apply `{"match_all":{}}` query.
 ### for specific query string search
 
 ```
-POST _scripts/blockmed-trans-aggs
+POST _scripts/blockmed-ipfs
 {
   "script": {
     "lang": "mustache",
-    "source": """{"size":0,"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
-  }
-}
-```
-
-
-Original `source` json object:
-
-```
-{
-  "size": 0,
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "bool": {
-            "should": [
-              {
-                "match": {
-                  "metadata.description": "{{query_string}}"
-                }
-              }{{^query_string}},{"match_all":{}}{{/query_string}}
-            ]
-          }
-        }
-      ],
-      "filter": {
-        "bool": {
-          "should": [
-            {
-              "term": {
-                "metadata.category": "{{category}}"
-              }
-            }{{^category}},{"match_all":{}}{{/category}}
-          ]
-        }
-      }
-    }
-  },
-  "aggs": {
-    "ipfsMetadataHash": {
-      "terms": {
-        "field": "returnValues.ipfsMetadataHash",
-        "size": "{{size}}"
-      },
-      "aggs": {
-        "PurchaseTxRecordCount": {
-          "filter": {
-            "term": {
-              "event": "PurchaseTxRecord"
-            }
-          }
-        },
-        "top_hits": {
-          "top_hits": {
-            "sort": [
-              {
-                "blockNumber": {
-                  "order": "desc"
-                }
-              }
-            ],
-            "_source": {
-              "includes": [
-                "event",
-                "metadata",
-                "returnValues"
-              ]
-            },
-            "size": 1
-          }
-        },
-        "filesize": {
-          "max": {
-            "field": "metadata.filesize"
-          }
-        },
-        "bucket_sort": {
-          "bucket_sort": {
-            "sort": [
-              {
-                "PurchaseTxRecordCount._count": {
-                  "order": "desc"
-                }
-              },
-              {
-                "filesize": {
-                  "order": "desc"
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
+    "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillis()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
   }
 }
 ```
@@ -659,126 +565,19 @@ Invoke search template
 ```
 GET blockmed-trans-*/_search/template
 {
-    "id": "blockmed-trans-aggs", 
+    "id": "blockmed-ipfs", 
     "params": {
-        "query_string": "shrimp",
+        "query_string": "elastic",
         "category": "data",
-        "size": 10
+        "size": 10,
+        "from": 0,
+        "sort_by_time": "true",
+        "sort_by_filesize": "",
+        "sort_by_accessed": "",
+        "sort_order": "asc"
     }
 }
 ```
-
-### for search all data
-
-```
-POST _scripts/blockmed-trans-aggs-all
-{
-  "script": {
-    "lang": "mustache",
-    "source": """{"size":0,"query":{"bool":{"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"aggs":{"ipfsMetadataHash":{"terms":{"field":"returnValues.ipfsMetadataHash","size":"{{size}}"},"aggs":{"PurchaseTxRecordCount":{"filter":{"term":{"event":"PurchaseTxRecord"}}},"top_hits":{"top_hits":{"sort":[{"blockNumber":{"order":"desc"}}],"_source":{"includes":["event","metadata","returnValues"]},"size":1}},"filesize":{"max":{"field":"metadata.filesize"}},"bucket_sort":{"bucket_sort":{"sort":[{"PurchaseTxRecordCount._count":{"order":"desc"}},{"filesize":{"order":"desc"}}]}}}}}}"""
-  }
-}
-
-```
-
-Original `source` json object
-
-```
-{
-  "script": {
-    "lang": "mustache",
-    "source": {
-      "size": 0,
-      "query": {
-        "bool": {
-          "filter": {
-            "bool": {
-              "should": [
-                {
-                  "term": {
-                    "metadata.category": "{{category}}"
-                  }
-                }{{^category}},{"match_all":{}}{{/category}}
-              ]
-            }
-          }
-        }
-      },
-      "aggs": {
-        "ipfsMetadataHash": {
-          "terms": {
-            "field": "returnValues.ipfsMetadataHash",
-            "size": "{{size}}"
-          },
-          "aggs": {
-            "PurchaseTxRecordCount": {
-              "filter": {
-                "term": {
-                  "event": "PurchaseTxRecord"
-                }
-              }
-            },
-            "top_hits": {
-              "top_hits": {
-                "sort": [
-                  {
-                    "blockNumber": {
-                      "order": "desc"
-                    }
-                  }
-                ],
-                "_source": {
-                  "includes": [
-                    "event",
-                    "metadata",
-                    "returnValues"
-                  ]
-                },
-                "size": 1
-              }
-            },
-            "filesize": {
-              "max": {
-                "field": "metadata.filesize"
-              }
-            },
-            "bucket_sort": {
-              "bucket_sort": {
-                "sort": [
-                  {
-                    "PurchaseTxRecordCount._count": {
-                      "order": "desc"
-                    }
-                  },
-                  {
-                    "filesize": {
-                      "order": "desc"
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-Invoke search template
-
-```
-GET blockmed-trans-*/_search/template
-{
-    "id": "blockmed-trans-aggs-all", 
-    "params": {
-        "category": "data",
-        "size": 10
-    }
-}
-```
-
 
 ## Example
 
