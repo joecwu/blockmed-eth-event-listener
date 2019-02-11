@@ -1,5 +1,7 @@
 # Elasticsearch Setup
 
+Notes: Please use Kibana dev-tools
+
 ## Setup Index Template
 
 ```
@@ -237,13 +239,6 @@ POST _template/blockmed-ipfs
 }
 ```
 
-or curl command
-
-```
-curl -XPOST 'localhost:9200/_template/blockmed-ipfs' -H 'content-type:application/json' -d '{"index_patterns":["blockmed-ipfs","blockmed-ipfs-*","backup-blockmed-ipfs-*"],"settings":{"number_of_shards":5,"number_of_replicas":2},"mappings":{"doc":{"properties":{"@timestamp":{"type":"date"},"@version":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"beat":{"properties":{"hostname":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"name":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"version":{"type":"keyword"}}},"blockHash":{"type":"keyword"},"blockNumber":{"type":"long"},"event":{"type":"keyword"},"fields":{"properties":{"appName":{"type":"keyword"},"appType":{"type":"keyword"}}},"host":{"properties":{"architecture":{"type":"keyword"},"containerized":{"type":"boolean"},"id":{"type":"keyword"},"name":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"os":{"properties":{"codename":{"type":"keyword"},"family":{"type":"keyword"},"platform":{"type":"keyword"},"version":{"type":"keyword"}}}}},"id":{"type":"keyword"},"indexBlockNumber":{"type":"long"},"input":{"properties":{"type":{"type":"keyword"}}},"logIndex":{"type":"long"},"metadata":{"properties":{"category":{"type":"keyword"},"description":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"filesize":{"type":"long"}}},"metadataCaptureTime":{"type":"date"},"offset":{"type":"long"},"prospector":{"properties":{"type":{"type":"keyword"}}},"accesser":{"type":"keyword"},"dataowner":{"type":"keyword"},"ethersSent":{"type":"long","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"ipfsMetadataHash":{"type":"keyword"},"registor":{"type":"keyword"},"tokenCost":{"type":"long","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"tokensGranted":{"type":"long","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"underlyingFileSize":{"type":"long","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"signature":{"type":"keyword"},"source":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"tags":{"type":"keyword"},"transactionHash":{"type":"keyword"},"transactionIndex":{"type":"long"},"uid":{"type":"keyword"}}}}}'
-```
-
-
 ## Search Template
 
 Setup search template
@@ -261,12 +256,6 @@ POST _scripts/blockmed-ipfs
     "source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillis()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""
   }
 }
-```
-
-or curl command
-
-```
-curl -XPOST 'localhost:9200/_scripts/blockmed-ipfs' -H 'content-type:application/json' -d '{"script":{"lang": "mustache","source": """{"size":{{size}},"from":{{from}},"query":{"bool":{"must":[{"bool":{"should":[{"match":{"metadata.description":"{{query_string}}"}}{{^query_string}},{"match_all":{}}{{/query_string}}]}}],"filter":{"bool":{"should":[{"term":{"metadata.category":"{{category}}"}}{{^category}},{"match_all":{}}{{/category}}]}}}},"sort":[{{#sort_by_time}}{"_script":{"script":{"source":"doc[\"metadataCaptureTime\"].date.getMillis()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_time}}{{#sort_by_filesize}}{"metadata.filesize":{"order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_filesize}}{{#sort_by_accessed}}{"_script":{"script":{"source":"doc[\"purchaseTxRecords\"].values.size()","lang":"painless"},"type":"number","order":"{{sort_order}}{{^sort_order}}desc{{/sort_order}}"}},{{/sort_by_accessed}}{"_score":{"order":"desc"}}],"highlight":{"fields":{"metadata.description":{}}}}"""}}'
 ```
 
 Invoke search template
